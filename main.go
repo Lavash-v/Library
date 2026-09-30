@@ -21,33 +21,38 @@ func (sms SMSNotifier) Notify(message string) {
 	fmt.Printf("\nОтправляю SMS на номер %v: '%v'\n", sms.ProneNumber, message)
 }
 
-type Address struct {
-	City string
-	Street string
-}
 
-type User struct {
+type Reader struct {
 	ID int
-	Name string
+	FirstName string
+	LastName string
 	Email string
 	IsActive bool
-	address Address
 }
 
-type Author struct {
+/*type Author struct {
 	FirstName string
 	LastName string 
-}
+}*/
 
 type Book struct {
+	ID int
 	Title string
 	Year int
-	BookAuthor Author
+	Author string
 	IsIssued bool
 }
 
+type Library struct {
+	Books []*Book
+	Readers []*Reader
+
+	lastBookID int
+	lastReaderID int
+}
+
 func (b Book) String() string {
-	return fmt.Sprintf(`"%s (%s, %d) %v"`, b.Title, b.BookAuthor, b.Year, b.IsIssued)
+	return fmt.Sprintf(`"%s (%s, %d) %v"`, b.Title, b.Author, b.Year, b.IsIssued)
 }
 
 func (b *Book) IssueBook() {
@@ -69,6 +74,42 @@ func (b *Book) ReturnBook() {
 
 }
 
+func (lib* Library) AddReader(firstname, lastname string) *Reader {
+	lib.lastReaderID++
+
+	newReader := &Reader{
+		ID: lib.lastReaderID,
+		FirstName: firstname,
+		LastName: lastname,
+		IsActive: true,
+	}
+
+	lib.Readers = append(lib.Readers, newReader)
+
+	fmt.Printf("Зарегистрировался читатель: %v %v\n", newReader.FirstName, newReader.LastName)
+	return newReader
+}
+
+
+func (lib *Library) AddBook(title, author string, year int) *Book {
+	lib.lastBookID++
+
+	// Создаем новую книгу
+	newBook := &Book{
+		ID:       lib.lastBookID,
+		Title:    title,
+		Author:   author,
+		Year:     year,
+		IsIssued: false,
+	}
+
+	lib.Books = append(lib.Books, newBook)
+
+	fmt.Printf("Добавлена новая книга: %v\n", newBook)
+	return newBook
+}
+
+
 func main(){
 	/*u := User{
 		ID: 1,
@@ -84,37 +125,28 @@ func main(){
 	u2.ID = 2
 	u2.IsActive = false
 	u2.Name = "Ilon Mask"
-	u2.address.City = "Beslan"*/
+	u2.address.City = "Beslan"
 
 	bookSlice := []Book{}
 
 	book1 := Book{
 		Title: "Война и мир",
 		Year:  1869,
-		BookAuthor: Author{
-			FirstName: "Лев",
-			LastName:  "Толстой",
-		},
+		Author: "Лев Толстой",
 		IsIssued: true,
 	}
 
 	book2 := Book{
 		Title: "Гуру дизайна",
 		Year:  2024,
-		BookAuthor: Author{
-			FirstName: "Апполон",
-			LastName:  "Чиколаев",
-		},
+		Author: "Апполон Чиколаев",
 		IsIssued: true,
 	}
 
 	book3 := Book{
 		Title: "Как переносить абьюз программистов. Том 1. Плачем вместе",
 		Year:  2025,
-		BookAuthor: Author{
-			FirstName: "Апполон",
-			LastName:  "Чиколаев",
-		},
+		Author: "Апполон Чиколаев",
 		IsIssued: true,
 	}
 
@@ -136,6 +168,20 @@ func main(){
 
 	for _, notify := range notifier {
 		notify.Notify("Ваша книга просрочена!")
-	}
+	}*/
+
+	fmt.Println("Запуск системы управления библиотекой...")
+	
+	// 1. Создаем экземпляр библиотеки
+	myLibrary := &Library{}
+
+	// 2. Добавляем читателей
+	myLibrary.AddReader("Тамара", "Коляда")
+	myLibrary.AddReader("Давид", "Хубаев")
+
+	// 3. Добавляем книги
+	myLibrary.AddBook("Я чут-чут не книжный червь", "Т. Коляда", 2027)
+	myLibrary.AddBook("Мифы древней Греции", "Греки Древние", 1990)
+
 }
 
