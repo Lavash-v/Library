@@ -26,6 +26,29 @@ type Book struct {
 	IsIssued bool
 }
 
+func (b Book) String() string {
+	return fmt.Sprintf(`"%s (%s, %d) %v"`, b.Title, b.BookAuthor, b.Year, b.IsIssued)
+}
+
+func (b *Book) IssueBook() {
+	if b.IsIssued {
+		fmt.Printf("\nКнига %s уже кому-то выдана", b.Title)
+		return
+	}
+	b.IsIssued = true
+	fmt.Printf("\nКнига %s была выдана", b.Title)
+}
+
+func (b *Book) ReturnBook() {
+	if !b.IsIssued {
+		fmt.Printf("\nКнига %s и так в библиотеке!", b.Title)
+		return
+	}
+	b.IsIssued = false
+	fmt.Printf("\nКнига %s возвращена в библиотеку.", b.Title)
+
+}
+
 func main(){
 	/*u := User{
 		ID: 1,
@@ -77,9 +100,11 @@ func main(){
 
 	bookSlice = append(bookSlice, book1, book2, book3)
 
+	book2.IssueBook()
+	book3.ReturnBook()
 
 	for _, book := range bookSlice {
-		fmt.Printf("%+v\n", book)
+		fmt.Printf("%+v\n", book.String())
 	}
 
 
