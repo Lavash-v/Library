@@ -1,6 +1,26 @@
 package main
 import "fmt"
 
+type Notifier interface {
+	Notify(message string)
+}
+
+type EmailNotifier struct {
+	EmailAddress string
+}
+
+type SMSNotifier struct {
+	ProneNumber string
+}
+
+func (email EmailNotifier) Notify(message string) {
+	fmt.Printf("\nОтправляю email на %v: '%v'\n", email.EmailAddress, message)
+}
+
+func (sms SMSNotifier) Notify(message string) {
+	fmt.Printf("\nОтправляю SMS на номер %v: '%v'\n", sms.ProneNumber, message)
+}
+
 type Address struct {
 	City string
 	Street string
@@ -107,7 +127,15 @@ func main(){
 		fmt.Printf("%+v\n", book.String())
 	}
 
+	notifier := []Notifier{}
 
+	e1 := EmailNotifier{EmailAddress: "t.s.kolyada@gmail.com"}
+	sms1 := SMSNotifier{ProneNumber: "+79288884813"}
 
+	notifier = append(notifier, e1, sms1)
+
+	for _, notify := range notifier {
+		notify.Notify("Ваша книга просрочена!")
+	}
 }
 
