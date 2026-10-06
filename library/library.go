@@ -31,6 +31,7 @@ func (lib* Library) AddReader(firstname, lastname string) *domain.Reader {
 
 
 func (lib *Library) AddBook(title, author string, year int, readerid int) *domain.Book {
+
 	lib.lastBookID++
 
 	newBook := &domain.Book{
@@ -67,19 +68,24 @@ func (lib *Library) FindReaderByID(id int) (*domain.Reader, error) {
 }
 
 func (lib *Library) IssueBookToReader(bookID int, readerID int) error {
-
 	book, err := lib.FindBookByID(bookID)
 	if err != nil {
-		return err
+		return fmt.Errorf("выдача отклонена: %w", err)
 	}
 
 	reader, err := lib.FindReaderByID(readerID)
 	if err != nil {
-		return err
+		return fmt.Errorf("выдача отклонена: %w", err)
 	}
 
-	book.IssueBook()
-	reader.AssignBook(book)
+	if book.IsIssued {
+		return fmt.Errorf("книга '%s' уже выдана другому читателю", book.Title)
+	}
+
+	err = reader.AssignBook(book)
+	if err != nil {
+		return fmt.Errorf("не удалось привязать книгу к читателю: %w", err)
+	}
 
 	return nil
 }
