@@ -103,3 +103,14 @@ func (lib *Library) ReturnBook(bookID int) error {
 
 	return nil
 }
+
+
+func (lib *Library) Save() error {
+    // в будущем
+    return nil
+}
+
+func (lib *Library) Load() error {
+    // в будущем
+    return nil
+}
