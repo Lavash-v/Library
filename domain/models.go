@@ -44,14 +44,14 @@ func (b *Book) ReturnBook() error {
 	return nil
 }
 
-func (r *Reader) AssignBook(book *Book) {
+func (r *Reader) AssignBook(book *Book) error { // Теперь без Printf
 	if book == nil {
-		fmt.Printf("Читатель %s %s не смог взять книгу, так как она не существует.\n", r.FirstName, r.LastName)
-		return
+		return fmt.Errorf("указатель на книгу равен nil")
 	}
 
-	fmt.Printf("Читатель %s %s взял книгу '%s' (%s, %d)\n",
-		r.FirstName, r.LastName, book.Title, book.Author, book.Year)
+	book.IsIssued = true
+	book.ReaderID = r.ID
+	return nil
 }
 
 func (r *Reader) Deactivate() {
