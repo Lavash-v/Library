@@ -3,13 +3,48 @@ package main
 import (
 	"fmt"
 	"library-app/library"
+	"os"
 )
 
-func main(){
-
+func main() {
 	fmt.Println("Запуск системы управления библиотекой...")
-	
+
 	myLibrary := &library.Library{}
+
+	args := os.Args[1:]
+	if len(args) > 0 {
+		switch args[0] {
+		case "save":
+			if len(args) < 2 {
+				fmt.Println("Использование: save <имя_файла.csv>")
+				return
+			}
+			if err := myLibrary.SaveBooksToCSV(args[1]); err != nil {
+				fmt.Printf("Ошибка сохранения: %v\n", err)
+				return
+			}
+			fmt.Printf("Книги успешно сохранены в %s\n", args[1])
+			return
+		case "load":
+			if len(args) < 2 {
+				fmt.Println("Использование: load <имя_файла.csv>")
+				return
+			}
+			if err := myLibrary.LoadBooksFromCSV(args[1]); err != nil {
+				fmt.Printf("Ошибка загрузки: %v\n", err)
+				return
+			}
+			fmt.Printf("Книги успешно загружены из %s\n", args[1])
+			for _, b := range myLibrary.Books {
+				fmt.Println(b)
+			}
+			return
+		default:
+			fmt.Printf("Неизвестная команда: %s\n", args[0])
+			fmt.Println("Доступные команды: save <файл.csv>, load <файл.csv>")
+			return
+		}
+	}
 
 	r1 := myLibrary.AddReader("Тамара", "Коляда")
 	r2 := myLibrary.AddReader("Давид", "Хубаев")
@@ -66,5 +101,4 @@ func main(){
 	} else {
 		fmt.Printf("Успех: Книга '%s' успешно выдана читателю %s %s\n", b1.Title, r1.FirstName, r1.LastName)
 	}
-
 }
