@@ -2,10 +2,28 @@ package storage
 
 import (
 	"encoding/csv"
+	"encoding/json"
 	"library-app/domain"
 	"os"
 	"strconv"
 )
+
+func WriteJSON(filename string, v any) error {
+	data, err := json.MarshalIndent(v, "", "  ")
+	if err != nil {
+		return err
+	}
+	return os.WriteFile(filename, data, 0644)
+}
+
+func ReadJSON(filename string, v any) error {
+	data, err := os.ReadFile(filename)
+	if err != nil {
+		return err
+	}
+	return json.Unmarshal(data, v)
+}
+
 
 func SaveBooksToCSV(filename string, books []*domain.Book) error {
 	file, err := os.Create(filename)
@@ -53,7 +71,6 @@ func LoadBooksFromCSV(filename string) ([]*domain.Book, error) {
 	}
 
 	books := []*domain.Book{}
-
 	if len(records) > 0 {
 		records = records[1:]
 	}
@@ -67,31 +84,27 @@ func LoadBooksFromCSV(filename string) ([]*domain.Book, error) {
 		if err != nil {
 			return nil, err
 		}
-
 		year, err := strconv.Atoi(record[3])
 		if err != nil {
 			return nil, err
 		}
-
 		isIssued, err := strconv.ParseBool(record[4])
 		if err != nil {
 			return nil, err
 		}
-
 		readerID, err := strconv.Atoi(record[5])
 		if err != nil {
 			return nil, err
 		}
 
-		book := &domain.Book{
+		books = append(books, &domain.Book{
 			ID:       id,
 			Title:    record[1],
 			Author:   record[2],
 			Year:     year,
 			IsIssued: isIssued,
 			ReaderID: readerID,
-		}
-		books = append(books, book)
+		})
 	}
 
 	return books, nil
