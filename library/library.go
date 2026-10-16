@@ -14,6 +14,7 @@ type Library struct {
 	LastReaderID int `json:"last_reader_id"`
 }
 
+// New создаёт новую пустую библиотеку.
 func New() *Library {
 	return &Library{
 		Books:   []*domain.Book{},
@@ -101,16 +102,24 @@ func (lib *Library) ReturnBook(bookID int) error {
 	return book.ReturnBook()
 }
 
+// ---------- JSON ----------
+
+// SaveLibraryToJSON сохраняет всю библиотеку (книги, читателей, счётчики)
+// в JSON-файл filename.
 func (lib *Library) SaveLibraryToJSON(filename string) error {
 	return storage.WriteJSON(filename, lib)
 }
 
+// LoadLibraryFromJSON загружает библиотеку из JSON-файла filename.
+// Если файла нет — возвращает ошибку, для которой os.IsNotExist(err) == true.
 func LoadLibraryFromJSON(filename string) (*Library, error) {
 	lib := &Library{}
 	if err := storage.ReadJSON(filename, lib); err != nil {
 		return nil, err
 	}
 
+	// Страховка: если в файле были null/отсутствующие поля,
+	// инициализируем срезы, чтобы дальнейший код не падал на nil.
 	if lib.Books == nil {
 		lib.Books = []*domain.Book{}
 	}

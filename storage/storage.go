@@ -8,6 +8,10 @@ import (
 	"strconv"
 )
 
+// ---------- JSON: низкоуровневые операции ----------
+
+// WriteJSON сериализует произвольное значение v в файл filename
+// в «красивом» формате (с отступами).
 func WriteJSON(filename string, v any) error {
 	data, err := json.MarshalIndent(v, "", "  ")
 	if err != nil {
@@ -16,6 +20,8 @@ func WriteJSON(filename string, v any) error {
 	return os.WriteFile(filename, data, 0644)
 }
 
+// ReadJSON читает JSON из файла filename и десериализует в v.
+// Если файла нет — возвращает ошибку, для которой os.IsNotExist(err) == true.
 func ReadJSON(filename string, v any) error {
 	data, err := os.ReadFile(filename)
 	if err != nil {
@@ -24,6 +30,7 @@ func ReadJSON(filename string, v any) error {
 	return json.Unmarshal(data, v)
 }
 
+// ---------- CSV: оставлено для обратной совместимости ----------
 
 func SaveBooksToCSV(filename string, books []*domain.Book) error {
 	file, err := os.Create(filename)
