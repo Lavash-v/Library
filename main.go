@@ -11,6 +11,12 @@ func main() {
 
 	myLibrary := &library.Library{}
 
+	r1 := myLibrary.AddReader("Тамара", "Коляда")
+	r2 := myLibrary.AddReader("Давид", "Хубаев")
+
+	b1 := myLibrary.AddBook("Я чут-чут не книжный червь", "Т. Коляда", 2027, 1)
+	b2 := myLibrary.AddBook("Мифы древней Греции", "Греки Древние", 1990, 2)
+
 	args := os.Args[1:]
 	if len(args) > 0 {
 		switch args[0] {
@@ -45,13 +51,6 @@ func main() {
 			return
 		}
 	}
-
-	r1 := myLibrary.AddReader("Тамара", "Коляда")
-	r2 := myLibrary.AddReader("Давид", "Хубаев")
-
-	b1 := myLibrary.AddBook("Я чут-чут не книжный червь", "Т. Коляда", 2027, 1)
-	b2 := myLibrary.AddBook("Мифы древней Греции", "Греки Древние", 1990, 2)
-
 	fmt.Println("\n---")
 
 	// успешная выдача книги
