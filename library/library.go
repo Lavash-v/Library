@@ -7,43 +7,46 @@ import (
 )
 
 type Library struct {
-	Books []*domain.Book
-	Readers []*domain.Reader
+	Books   []*domain.Book   `json:"books"`
+	Readers []*domain.Reader `json:"readers"`
 
-	lastBookID int
-	lastReaderID int
+	LastBookID   int `json:"last_book_id"`
+	LastReaderID int `json:"last_reader_id"`
 }
 
-func (lib* Library) AddReader(firstname, lastname string) *domain.Reader {
-	lib.lastReaderID++
+func New() *Library {
+	return &Library{
+		Books:   []*domain.Book{},
+		Readers: []*domain.Reader{},
+	}
+}
+
+func (lib *Library) AddReader(firstname, lastname string) *domain.Reader {
+	lib.LastReaderID++
 
 	newReader := &domain.Reader{
-		ID: lib.lastReaderID,
+		ID:        lib.LastReaderID,
 		FirstName: firstname,
-		LastName: lastname,
-		IsActive: true,
+		LastName:  lastname,
+		IsActive:  true,
 	}
-
 	lib.Readers = append(lib.Readers, newReader)
 
 	fmt.Printf("Зарегистрировался читатель: %v %v\n", newReader.FirstName, newReader.LastName)
 	return newReader
 }
 
-
 func (lib *Library) AddBook(title, author string, year int, readerid int) *domain.Book {
-
-	lib.lastBookID++
+	lib.LastBookID++
 
 	newBook := &domain.Book{
-		ID:       lib.lastBookID,
+		ID:       lib.LastBookID,
 		Title:    title,
 		Author:   author,
 		Year:     year,
 		IsIssued: false,
 		ReaderID: readerid,
 	}
-
 	lib.Books = append(lib.Books, newBook)
 
 	fmt.Printf("Добавлена новая книга: %v\n", newBook)
@@ -83,8 +86,7 @@ func (lib *Library) IssueBookToReader(bookID int, readerID int) error {
 		return fmt.Errorf("книга '%s' уже выдана другому читателю", book.Title)
 	}
 
-	err = reader.AssignBook(book)
-	if err != nil {
+	if err := reader.AssignBook(book); err != nil {
 		return fmt.Errorf("не удалось привязать книгу к читателю: %w", err)
 	}
 
@@ -96,33 +98,25 @@ func (lib *Library) ReturnBook(bookID int) error {
 	if err != nil {
 		return fmt.Errorf("не удалось вернуть книгу: %w", err)
 	}
-
-	err = book.ReturnBook()
-	if err != nil {
-		return err 
-	}
-
-	return nil
+	return book.ReturnBook()
 }
 
-func (lib *Library) SaveBooksToCSV(filename string) error {
-	return storage.SaveBooksToCSV(filename, lib.Books)
+func (lib *Library) SaveLibraryToJSON(filename string) error {
+	return storage.WriteJSON(filename, lib)
 }
 
-func (lib *Library) LoadBooksFromCSV(filename string) error {
-	books, err := storage.LoadBooksFromCSV(filename)
-	if err != nil {
-		return err
+func LoadLibraryFromJSON(filename string) (*Library, error) {
+	lib := &Library{}
+	if err := storage.ReadJSON(filename, lib); err != nil {
+		return nil, err
 	}
 
-	lib.Books = books
-
-	lib.lastBookID = 0
-	for _, book := range lib.Books {
-		if book.ID > lib.lastBookID {
-			lib.lastBookID = book.ID
-		}
+	if lib.Books == nil {
+		lib.Books = []*domain.Book{}
+	}
+	if lib.Readers == nil {
+		lib.Readers = []*domain.Reader{}
 	}
 
-	return nil
+	return lib, nil
 }
