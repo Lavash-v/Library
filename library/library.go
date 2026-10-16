@@ -3,6 +3,7 @@ package library
 import (
 	"fmt"
 	"library-app/domain"
+	"library-app/storage"
 )
 
 type Library struct {
@@ -104,13 +105,24 @@ func (lib *Library) ReturnBook(bookID int) error {
 	return nil
 }
 
-
-func (lib *Library) Save() error {
-    // в будущем
-    return nil
+func (lib *Library) SaveBooksToCSV(filename string) error {
+	return storage.SaveBooksToCSV(filename, lib.Books)
 }
 
-func (lib *Library) Load() error {
-    // в будущем
-    return nil
+func (lib *Library) LoadBooksFromCSV(filename string) error {
+	books, err := storage.LoadBooksFromCSV(filename)
+	if err != nil {
+		return err
+	}
+
+	lib.Books = books
+
+	lib.lastBookID = 0
+	for _, book := range lib.Books {
+		if book.ID > lib.lastBookID {
+			lib.lastBookID = book.ID
+		}
+	}
+
+	return nil
 }
