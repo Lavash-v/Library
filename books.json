@@ -1,0 +1,31 @@
+{
+  "books": [
+    {
+      "id": 1,
+      "title": "Я чут-чут не книжный червь",
+      "year": 2027,
+      "author": "Коляда Т.С",
+      "is_issued": true,
+      "reader_id": 1
+    },
+    {
+      "id": 2,
+      "title": "Мифы древней Греции",
+      "year": 1990,
+      "author": "Греки древние",
+      "is_issued": false,
+      "reader_id": 0
+    }
+  ],
+  "readers": [
+    {
+      "id": 1,
+      "first_name": "Тамара",
+      "last_name": "Коляда",
+      "email": "",
+      "is_active": true
+    }
+  ],
+  "last_book_id": 2,
+  "last_reader_id": 1
+}
